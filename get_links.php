@@ -1,5 +1,10 @@
 <?php
 
+$host = "localhost";
+$user = "root";
+$password = "qwerty";
+$db = "sites";
+
 if (isset($argv[1])) {
   if(!is_dir($argv[1])){
     echo "No such directory: $argv[1]".PHP_EOL;
@@ -7,16 +12,36 @@ if (isset($argv[1])) {
   }
   $path = $argv[1];
 } else {
-  $path = '.';
+  echo 'No arguments!'.PHP_EOL;
+  exit (0);
 }
 
-function get_links($file, $path) {
-  echo 'MIME: '.mime_content_type($file).PHP_EOL;
+$mysqli = new mysqli($host, $user, $password, $db);
+if ($mysqli->connect_errno) {
+    echo "Can't connect to MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error;
+}
+
+function insert_link_into_db($mysqli, $domain, $link, $from_url) {
+  $sql = "INSERT INTO links (domain, link, from_url)
+          VALUES ('".$domain."', '".$link."', '".$from_url."')";
+  if ($mysqli->query($sql) === TRUE) {
+    echo "New record created successfully\n";
+  } else {
+    echo "Error: " . $sql . "\n" . $mysqli->error."\n";
+  }
+}
+
+function get_links($file, $path, $url, $mysqli) {
+  if(!file_exists($file))
+    return ;
   if (mime_content_type($file) !== "text/html")
     return ;
   $html = file_get_contents($file);
+  if (!$html)
+    return ;
   if (strpos($html, "nofollow") !== false) {
     echo "NOFOLLOW\n";
+    unlink($file);
     return ;
   }
   preg_match_all("<a href=\"(http|https)://([^\s]*)\">", $html, $matches);
@@ -26,23 +51,18 @@ function get_links($file, $path) {
     if (strpos($link, $path) !== false)
       continue ;
     $domain = parse_url($link)['host'];
-    echo 'DOMAIN: '.$domain.PHP_EOL;
-    echo 'LINK: '.$link.PHP_EOL;
-    echo PHP_EOL;
-    // insert_link_into_db($mysqli, $domain, $link, $row['id');
+    insert_link_into_db($mysqli, $domain, $link, $url);
   }
+  unlink($file);
 }
 
 $list = explode("\n", file_get_contents($path.'.log.txt'));
 
-// for ($i = 0; $i < count($list); $i++) {
-for ($i = 0; $i < 20; $i++) {
+for ($i = 0; $i < count($list); $i++) {
   if (strpos($list[$i], "URL: ") === 0) {
-    // $url = substr($list[$i], 5);
-    // echo $url.PHP_EOL;
+    $url = substr($list[$i], 5);
     $file = substr($list[$i+1], 7);
-    // echo $file.PHP_EOL;
-    get_links($file, $path);
+    get_links($file, $path, $url, $mysqli);
   }
 }
 
