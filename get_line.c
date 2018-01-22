@@ -25,6 +25,7 @@ int main()
 	size_t	bufsize = 4096;
 	size_t	characters;
 	int	i;
+	int	j;
 
 	while(getline(&buffer, &bufsize, stdin) != -1)
 	{
@@ -35,11 +36,14 @@ int main()
 		}
 		if (strstr(buffer, "saved"))
 		{
-			i = find_save(buffer + 35) + 35;	
-			buffer[i - 4] = '\0';
-			
-			printf("URL: %s", url);
-			printf("SAVED: %s\n", buffer + 37);
+			j = 0;
+			while (buffer[j] != ')')
+			    j++;
+			j += 5;
+               		i = find_save(buffer + j) + j;
+                	buffer[i - 2] = '\0';
+                	printf("URL: %s", url);
+                	printf("SAVED: %s\n", buffer + j);
 		}		
 	}
 
