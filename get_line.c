@@ -26,7 +26,7 @@ int main()
 	size_t	characters;
 	int	i;
 
-	while(getline(&buffer, &bufsize, stdin))
+	while(getline(&buffer, &bufsize, stdin) != -1)
 	{
 		if (buffer[0] == '-' && buffer[1] == '-')
 		{
