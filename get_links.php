@@ -2,7 +2,7 @@
 
 $host = "localhost";
 $user = "root";
-$password = "be7cfa69b89205d01fdb30227e5d36582455e2c136bb015b";
+$password = "password";
 $db = "scrape";
 
 if (isset($argv[1])) {
