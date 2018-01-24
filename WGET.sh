@@ -1,3 +1,3 @@
 #!/bin/bash
 URL=$1
-wget -r -nd -P $URL -R avi,css,djvu,doc,docx,gif,gz,ico,jpeg,jpg,js,json,mp3,mp4,pdf,png,ppt,ps,rar,svg,tex,tmp,txt,xls,xlsx,zip $URL
+wget -r -nd -P $URL --max-redirect 0 -R avi,bmp,css,djvu,doc,docx,gif,GIF,gz,ico,jpeg,jpg,JPG,js,json,mp3,mp4,ogv,pdf,png,ppt,ps,rar,rss,svg,swf,tex,tmp,txt,txt.tmp,webm,xls,xlsx,xml,zip $URL
